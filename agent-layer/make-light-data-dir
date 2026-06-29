@@ -1,0 +1,149 @@
+#!/usr/bin/env sh
+set -eu
+
+usage() {
+	printf '%s\n' "usage: $0 <target-data-dir>"
+	printf '%s\n' "Creates an experimental wesnoth-2077 light data directory."
+}
+
+if [ "${1:-}" = "" ]; then
+	usage
+	exit 2
+fi
+
+repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+target=$1
+tmp="${target}.tmp"
+
+if [ -e "$target" ]; then
+	printf '%s\n' "target already exists: $target" >&2
+	exit 1
+fi
+
+if [ -e "$tmp" ]; then
+	printf '%s\n' "temporary target already exists: $tmp" >&2
+	exit 1
+fi
+
+mkdir -p "$tmp/data/campaigns"
+
+link_path() {
+	src=$1
+	dst=$2
+	mkdir -p "$(dirname -- "$dst")"
+	ln -s "$src" "$dst"
+}
+
+# Top-level assets expected by --data-dir.
+link_path "$repo_root/fonts" "$tmp/fonts"
+link_path "$repo_root/images" "$tmp/images"
+link_path "$repo_root/sounds" "$tmp/sounds"
+
+# Shared data. Keep these as symlinks so the profile is cheap to regenerate.
+for item in advanced_preferences.cfg cores.cfg english.cfg game_config.cfg lan_server.cfg tips.cfg themes core ai gui hardwired lua multiplayer schema languages modifications modifications.cfg; do
+	if [ -e "$repo_root/data/$item" ]; then
+		link_path "$repo_root/data/$item" "$tmp/data/$item"
+	fi
+done
+
+# The one mainline multiplayer campaign profile we keep initially.
+link_path "$repo_root/data/campaigns/World_Conquest" "$tmp/data/campaigns/World_Conquest"
+
+# World Conquest references one Rise of Wesnoth story image directly.
+mkdir -p "$tmp/data/campaigns/The_Rise_Of_Wesnoth/images/story"
+link_path \
+	"$repo_root/data/campaigns/The_Rise_Of_Wesnoth/images/story/trow_story_04-Fall_of_Eldaric.jpg" \
+	"$tmp/data/campaigns/The_Rise_Of_Wesnoth/images/story/trow_story_04-Fall_of_Eldaric.jpg"
+
+cat > "$tmp/data/_main.cfg" <<'PROFILE'
+#textdomain wesnoth
+
+# Experimental wesnoth-2077 light profile.
+# Goal: load normal core + multiplayer + World Conquest, not every mainline campaign.
+
+# title screen and no_gui mode do not need terrain_graphics
+#ifdef TITLE_SCREEN
+#define NO_TERRAIN_GFX
+#enddef
+#endif
+
+#ifdef NO_GUI
+#define NO_TERRAIN_GFX
+#enddef
+#endif
+
+{english.cfg}
+
+{themes/}
+{core/}
+
+[multiplayer_side]
+    id=Custom
+    name= _"Custom"
+    image="units/unknown-unit.png"
+[/multiplayer_side]
+
+#ifdef MULTIPLAYER
+{multiplayer/}
+
+#ifdef MP_TEST
+# This light profile intentionally omits data/test. MP_TEST is unsupported here.
+#endif
+
+#endif
+
+# Keep eras loaded in SP and MP to avoid mode reload churn.
+{multiplayer/eras.cfg}
+
+# Keep only the mainline MP campaign selected for the first agentic profile.
+{campaigns/World_Conquest/}
+
+{modifications.cfg}
+
+[ais]
+    default_ai_algorithm=ai_default_rca
+    [default_config]
+        {ai/utils/default_config.cfg}
+    [/default_config]
+    {ai/ais/}
+#ifdef DEBUG_MODE
+    {ai/dev/}
+#endif
+[/ais]
+
+[textdomain]
+    name="wesnoth"
+[/textdomain]
+[textdomain]
+    name="wesnoth-help"
+[/textdomain]
+[textdomain]
+    name="wesnoth-units"
+[/textdomain]
+[textdomain]
+    name="wesnoth-multiplayer"
+[/textdomain]
+[textdomain]
+    name="wesnoth-anl"
+[/textdomain]
+
+#ifndef NO_TERRAIN_GFX
+{core/terrain-graphics.cfg}
+#endif
+
+[binary_path]
+    path=data/core
+[/binary_path]
+
+{advanced_preferences.cfg}
+{game_config.cfg}
+
+[textdomain]
+    name="wesnoth-lib"
+[/textdomain]
+PROFILE
+
+mv "$tmp" "$target"
+
+printf '%s\n' "created light data directory: $target"
+printf '%s\n' "try with: wesnoth --data-dir $target --noaddons --nomusic --nosound"
