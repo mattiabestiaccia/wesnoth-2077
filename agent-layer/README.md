@@ -62,3 +62,12 @@ layer remain GPL v2+ compatible.
 
 Built on the work of [The Battle for Wesnoth Project](https://wesnoth.org/) and
 its community of volunteers since 2003.
+
+## Headless Build & Smoke Test
+To build Wesnoth headlessly using a Docker container with resource limits, use:
+`./headless-build.sh`
+
+This script mounts the repo and builds it using `wesnoth/wesnoth:2404-sdl3`, with limits (`--cpus=1.5`, `--memory=3g`, `--memory-swap=4g`), ensuring the host VPS does not run out of memory.
+
+To run a headless smoke test:
+`./headless-smoke-test.sh`
