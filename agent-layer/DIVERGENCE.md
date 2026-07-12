@@ -28,6 +28,7 @@
 | `agent-layer/DIVERGENCE.md` | doc | `99e6190f` | this ledger |
 | `agent-layer/container-build.sh` | script | this commit | containerized build, limits per BRU-43-7-3 |
 | `agent-layer/lua/hello-plugin.lua` | script | this commit | minimal `--plugin` proof (BRU-43-1-3) |
+| `agent-layer/verify-wml-lua.sh` | script | this commit | `--validate` + `--plugin` verification (BRU-43-1-3) |
 
 ### 2. Modified upstream files
 
