@@ -28,7 +28,8 @@
 | `agent-layer/DIVERGENCE.md` | doc | `99e6190f` | this ledger |
 | `agent-layer/container-build.sh` | script | this commit | containerized build, limits per BRU-43-7-3 |
 | `agent-layer/lua/hello-plugin.lua` | script | this commit | minimal `--plugin` proof (BRU-43-1-3) |
-| `agent-layer/verify-wml-lua.sh` | script | this commit | `--validate` + `--plugin` verification (BRU-43-1-3) |
+| `agent-layer/verify-wml-lua.sh` | script | `57c4287b` | `--validate` + `--plugin` verification (BRU-43-1-3) |
+| `agent-layer/measure-data-profiles.sh` | script | this commit | RSS/wall measurement full vs light data dir (BRU-43-7-5) |
 
 ### 2. Modified upstream files
 

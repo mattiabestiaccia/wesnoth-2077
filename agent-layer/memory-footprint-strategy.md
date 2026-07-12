@@ -126,3 +126,29 @@ Expected limitation:
 Proceed with "multiplayer campaign only" as an experimental data/runtime profile.
 
 Do not remove other modes from C++ yet. The first implementation should preserve upstream syncability and prove memory impact with measurements.
+
+## Measured results (2026-07-12, BRU-43-7-5)
+
+Workload: MP ai-vs-ai headless (`--nogui --multiplayer --controller 1:ai
+--controller 2:ai --exit-at-end`), Wesnoth 1.19.25+dev (`84011724`), container
+`wesnoth/wesnoth:2404-sdl3` with limits per BRU-43-7-3, VPS 2 vCPU. Script:
+`agent-layer/measure-data-profiles.sh` (VmHWM sampled from `/proc`; GNU time
+not available in the image).
+
+| Metric | full `data/` | light profile | delta |
+| --- | ---: | ---: | ---: |
+| Peak RSS (VmHWM), pass 1 | 167.1 MB | 157.9 MB | −5.5% |
+| Peak RSS (VmHWM), pass 2 | 155.9 MB | 146.2 MB | −6.2% |
+| cgroup `memory.peak`, pass 2 | 114.6 MB | 105.1 MB | −8.3% |
+| Wall time | 5–7 s | 4–7 s | ≈ noise |
+| Data surface (`du -sL`) | 713 MB | 416 MB | −42% |
+
+Fix applied: the profile was missing `data/COPYING.txt` (fatal at config load,
+referenced by `core/help.cfg`) — added to `make-light-data-dir`.
+
+**Conclusion**: the light profile is a real but *modest* RSS win (~6%) for the
+headless agent loop — base engine memory dominates, as predicted above. Its
+actual value is the −42% load/test surface and packaging size, not RAM. The
+headless full-data footprint (~160 MB RSS) is small enough that memory is NOT
+a bottleneck for agent runs on the VPS. Keep the profile as an optional
+harness; do not invest further in memory trimming for now.

@@ -40,7 +40,7 @@ link_path "$repo_root/images" "$tmp/images"
 link_path "$repo_root/sounds" "$tmp/sounds"
 
 # Shared data. Keep these as symlinks so the profile is cheap to regenerate.
-for item in advanced_preferences.cfg cores.cfg english.cfg game_config.cfg lan_server.cfg tips.cfg themes core ai gui hardwired lua multiplayer schema languages modifications modifications.cfg; do
+for item in COPYING.txt advanced_preferences.cfg cores.cfg english.cfg game_config.cfg lan_server.cfg tips.cfg themes core ai gui hardwired lua multiplayer schema languages modifications modifications.cfg; do
 	if [ -e "$repo_root/data/$item" ]; then
 		link_path "$repo_root/data/$item" "$tmp/data/$item"
 	fi
