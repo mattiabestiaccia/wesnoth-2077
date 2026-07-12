@@ -25,7 +25,9 @@
 | `agent-layer/memory-footprint-strategy.md` | doc | `d97294c7` | light data profile strategy + measurements |
 | `agent-layer/make-light-data-dir` | script | `d97294c7` | builds a trimmed `--data-dir` profile |
 | `agent-layer/headless-smoke-test.sh` | script | `4ec52c8f` | containerized `--nogui` smoke test |
-| `agent-layer/DIVERGENCE.md` | doc | this commit | this ledger |
+| `agent-layer/DIVERGENCE.md` | doc | `99e6190f` | this ledger |
+| `agent-layer/container-build.sh` | script | this commit | containerized build, limits per BRU-43-7-3 |
+| `agent-layer/lua/hello-plugin.lua` | script | this commit | minimal `--plugin` proof (BRU-43-1-3) |
 
 ### 2. Modified upstream files
 
