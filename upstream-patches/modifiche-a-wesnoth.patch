@@ -1,0 +1,52 @@
+diff --git a/.github/workflows/ci-main.yml b/.github/workflows/ci-main.yml
+index 4185d5eb8e9d3..1716761e8015b 100644
+--- a/.github/workflows/ci-main.yml
++++ b/.github/workflows/ci-main.yml
+@@ -37,6 +37,9 @@ jobs:
+       - name: Run luacheck
+         if: success() || failure()
+         run: luacheck .
++      - name: OKF documentation check
++        if: success() || failure()
++        run: ./utils/CI/check_okf.sh
+       - name: Doxygen check
+         if: success() || failure()
+         run: doxygen doc/doxygen/Doxyfile
+diff --git a/CONTRIBUTING.md b/CONTRIBUTING.md
+index fdcb64ae90626..fcaf18104d3f6 100644
+--- a/CONTRIBUTING.md
++++ b/CONTRIBUTING.md
+@@ -12,6 +12,20 @@ The Discord server is mirrored to [Libera.Chat IRC](https://libera.chat), channe
+ 
+ Art and music submissions are accepted usually to fill in missing or outdated assets. If you are interested in contributing, we recommend that you contact us first to determine the best resources for you to work on based on need and interest. We also commission larger projects such as character portraits, story art, and music tracks.
+ 
++## Documentation
++
++All **new Markdown files** in this repository must follow the [Open Knowledge Format (OKF) v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md). Project documentation is maintained as an OKF knowledge bundle in [`docs/okf/`](docs/okf/index.md).
++
++Read the [documentation manifest](docs/okf/manifest.md) for the full policy, including:
++
++* Required YAML frontmatter with a non-empty `type` field on every concept document
++* Preferred structural markdown (headings, lists, tables, code blocks)
++* Exceptions for changelog, legal files, and git submodule content
++
++Before opening a pull request that adds or changes documentation, run:
++
++    $ ./utils/CI/check_okf.sh
++
+ ## Engine
+ 
+ Wesnoth's engine conforms to the C++17 standard. We encourage the use of standard library APIs over third-party libraries whenever possible. However, third-party libraries are preferred over adding new, custom in-engine APIs, when appropriate.
+diff --git a/README.md b/README.md
+index 7afd7e7c486a1..fb999e5b3c15b 100644
+--- a/README.md
++++ b/README.md
+@@ -10,6 +10,8 @@ About
+ 
+ **The Battle for Wesnoth** is an Open Source, turn-based tactical strategy game with a high fantasy theme, featuring both singleplayer and online/hotseat multiplayer combat. Fight a desperate battle to reclaim the throne of Wesnoth, search for the key to immortality, or take part in any number of other adventures.
+ 
++Structured project documentation lives in [`docs/okf/`](docs/okf/index.md) using the [Open Knowledge Format (OKF) v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md). All new Markdown files in this repository must follow OKF — see the [documentation manifest](docs/okf/manifest.md).
++
+ Community
+ ---------
+ 
